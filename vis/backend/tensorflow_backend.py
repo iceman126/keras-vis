@@ -50,7 +50,7 @@ _BACKPROP_MODIFIERS = {
 _MODIFIED_MODEL_CACHE = dict()
 
 
-def modify_model_backprop(model, backprop_modifier):
+def modify_model_backprop(model, backprop_modifier, custom_objects=None):
     """Creates a copy of model by modifying all activations to use a custom op to modify the backprop behavior.
 
     Args:
@@ -94,7 +94,7 @@ def modify_model_backprop(model, backprop_modifier):
         # 3. Create graph under custom context manager.
         with tf.get_default_graph().gradient_override_map({'Relu': backprop_modifier}):
             #  This should rebuild graph with modifications.
-            modified_model = load_model(model_path)
+            modified_model = load_model(model_path, custom_objects=custom_objects)
 
             # Cache to improve subsequent call performance.
             _MODIFIED_MODEL_CACHE[(model, backprop_modifier)] = modified_model

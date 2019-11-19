@@ -4,7 +4,7 @@ from . import backend
 from .utils import utils
 
 
-def guided(model):
+def guided(model, custom_objects=None):
     """Modifies backprop to only propagate positive gradients for positive activations.
 
     Args:
@@ -14,10 +14,10 @@ def guided(model):
         Details on guided back propagation can be found in paper: [String For Simplicity: The All Convolutional Net]
         (https://arxiv.org/pdf/1412.6806.pdf)
     """
-    return backend.modify_model_backprop(model, 'guided')
+    return backend.modify_model_backprop(model, 'guided', custom_objects=custom_objects)
 
 
-def rectified(model):
+def rectified(model, custom_objects=None):
     """Modifies backprop to only propagate positive gradients.
 
     Args:
@@ -27,7 +27,7 @@ def rectified(model):
         Details can be found in the paper: [Visualizing and Understanding Convolutional Networks]
         (https://arxiv.org/pdf/1311.2901.pdf)
     """
-    return backend.modify_model_backprop(model, 'rectified')
+    return backend.modify_model_backprop(model, 'rectified', custom_objects=custom_objects)
 
 
 # Create aliases

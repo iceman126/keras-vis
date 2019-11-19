@@ -85,7 +85,7 @@ def visualize_saliency_with_losses(input_tensor, losses, seed_input, wrt_tensor=
 
 
 def visualize_saliency(model, layer_idx, filter_indices, seed_input, wrt_tensor=None,
-                       backprop_modifier=None, grad_modifier='absolute', keepdims=False):
+                       backprop_modifier=None, grad_modifier='absolute', keepdims=False, custom_objects=None):
     """Generates an attention heatmap over the `seed_input` for maximizing `filter_indices`
     output in the given `layer_idx`.
 
@@ -124,7 +124,7 @@ def visualize_saliency(model, layer_idx, filter_indices, seed_input, wrt_tensor=
     """
     if backprop_modifier is not None:
         modifier_fn = get(backprop_modifier)
-        model = modifier_fn(model)
+        model = modifier_fn(model, custom_objects=custom_objects)
 
     # `ActivationMaximization` loss reduces as outputs get large, hence negative gradients indicate the direction
     # for increasing activations. Multiply with -1 so that positive gradients indicate increase instead.
@@ -189,6 +189,7 @@ def visualize_cam_with_losses(input_tensor, losses, seed_input, penultimate_laye
 
     # The penultimate feature map size is definitely smaller than input image.
     input_dims = utils.get_img_shape(input_tensor)[2:]
+    # input_dims = utils.get_img_shape(seed_input)[2:]
 
     # Figure out the zoom factor.
     zoom_factor = [i / (j * 1.0) for i, j in iter(zip(input_dims, output_dims))]
@@ -198,7 +199,7 @@ def visualize_cam_with_losses(input_tensor, losses, seed_input, penultimate_laye
 
 def visualize_cam(model, layer_idx, filter_indices,
                   seed_input, penultimate_layer_idx=None,
-                  backprop_modifier=None, grad_modifier=None):
+                  backprop_modifier=None, grad_modifier=None, custom_objects=None):
     """Generates a gradient based class activation map (grad-CAM) that maximizes the outputs of
     `filter_indices` in `layer_idx`.
 
@@ -233,7 +234,7 @@ def visualize_cam(model, layer_idx, filter_indices,
     """
     if backprop_modifier is not None:
         modifier_fn = get(backprop_modifier)
-        model = modifier_fn(model)
+        model = modifier_fn(model, custom_objects=custom_objects)
 
     penultimate_layer = _find_penultimate_layer(model, layer_idx, penultimate_layer_idx)
 
